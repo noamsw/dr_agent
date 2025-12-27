@@ -1,0 +1,52 @@
+[
+  {
+    "medication_id": "m001",
+    "name_brand": "Advil",
+    "name_generic": "Ibuprofen",
+    "active_ingredients": [{"name": "Ibuprofen", "amount": 200, "unit": "mg"}],
+    "otc": true,
+    "requires_prescription": false,
+    "dosage_label": "Adults and children 12 years and over: 1 tablet every 4-6 hours while symptoms persist. If pain or fever does not respond to 1 tablet, 2 tablets may be used. Do not exceed 6 tablets in 24 hours unless directed by a doctor.",
+    "warnings_label": "Ask a doctor before use if you have stomach bleeding risk, heart disease, high blood pressure, or take blood thinners. Stop use and ask a doctor if you experience allergic reaction."
+  },
+  {
+    "medication_id": "m002",
+    "name_brand": "Tylenol",
+    "name_generic": "Acetaminophen (Paracetamol)",
+    "active_ingredients": [{"name": "Acetaminophen", "amount": 500, "unit": "mg"}],
+    "otc": true,
+    "requires_prescription": false,
+    "dosage_label": "Adults and children 12 years and over: 2 caplets every 6 hours while symptoms persist. Do not exceed 6 caplets in 24 hours.",
+    "warnings_label": "Liver warning: Severe liver damage may occur if you take more than directed or with alcohol."
+  },
+  {
+    "medication_id": "m003",
+    "name_brand": "Amoxicillin 500mg",
+    "name_generic": "Amoxicillin",
+    "active_ingredients": [{"name": "Amoxicillin", "amount": 500, "unit": "mg"}],
+    "otc": false,
+    "requires_prescription": true,
+    "dosage_label": "Use only as prescribed. Follow the directions on your prescription label. Complete the full course unless instructed otherwise by a healthcare professional.",
+    "warnings_label": "Tell your doctor if you have penicillin allergy. Seek urgent care for severe allergic reaction."
+  },
+  {
+    "medication_id": "m004",
+    "name_brand": "Cetirizine 10mg",
+    "name_generic": "Cetirizine",
+    "active_ingredients": [{"name": "Cetirizine", "amount": 10, "unit": "mg"}],
+    "otc": true,
+    "requires_prescription": false,
+    "dosage_label": "Adults and children 6 years and over: 1 tablet once daily. Do not take more than 1 tablet in 24 hours.",
+    "warnings_label": "May cause drowsiness. Avoid alcohol and be careful when driving."
+  },
+  {
+    "medication_id": "m005",
+    "name_brand": "Metformin 500mg",
+    "name_generic": "Metformin",
+    "active_ingredients": [{"name": "Metformin", "amount": 500, "unit": "mg"}],
+    "otc": false,
+    "requires_prescription": true,
+    "dosage_label": "Use only as prescribed. Follow the directions on your prescription label.",
+    "warnings_label": "Discuss kidney issues and other risk factors with a healthcare professional."
+  }
+]
