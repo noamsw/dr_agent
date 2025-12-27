@@ -41,7 +41,7 @@ TOOLS_SPEC = [
     {
         "type": "function",
         "name": "get_medication_by_name",
-        "description": "Find a medication by brand or generic name. This returns",
+        "description": "Find a medication by brand or generic name.",
         "parameters": {
             "type": "object",
             "properties": {
