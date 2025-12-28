@@ -104,9 +104,8 @@ TOOLS_SPEC = [
 ]
 
 
-async def run_agent_stream(payload: Dict[str, Any]) -> AsyncGenerator[Dict[str, Any], None]:
+async def run_agent_stream(payload: Dict[str, Any], history: List[Dict[str, Any]]) -> AsyncGenerator[Dict[str, Any], None]:
     user_text = (payload.get("text") or "").strip()
-    lang = payload.get("lang")
 
     if not user_text:
         yield {"type": "error", "message": "Empty message."}
@@ -114,10 +113,9 @@ async def run_agent_stream(payload: Dict[str, Any]) -> AsyncGenerator[Dict[str, 
 
     client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    input_list: List[Dict[str, Any]] = [
-        {"role": "developer", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_text},
-    ]
+    input_list = [{"role": "developer", "content": SYSTEM_PROMPT}] + history + [
+    {"role": "user", "content": user_text},
+]
     
     while True:
         # 1) streamed call
