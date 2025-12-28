@@ -5,7 +5,6 @@ async def main():
     async with websockets.connect(uri) as ws:
         await ws.send(json.dumps({
             "text": "Do you have Advil in stock and do I need a prescription?",
-            "lang": "en"
         }))
 
         while True:

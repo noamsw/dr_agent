@@ -25,7 +25,6 @@ async def ws_chat(ws: WebSocket):
     try:
         while True:
             msg = await ws.receive_json()
-            # expected: { "text": "...", "lang": "en"|"he" }
             async for event in run_agent_stream(msg):
                 await ws.send_json(event)
     except WebSocketDisconnect:

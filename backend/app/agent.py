@@ -1,9 +1,8 @@
 import os
 import json
-import asyncio
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 from app.tools import (
     get_medication_by_name,
@@ -21,8 +20,10 @@ Hard rules:
 3) You may explain label-style dosage/usage instructions and active ingredients as written in medication records.
 4) Use tools to answer questions about medications, inventory, prescription requirements, ingredients, allergies and feedback.
 5) Do not invent medication data or stock. If missing/ambiguous, ask a clarifying question or use the tool to search.
+6) If a user mistypes a common medication name, ask them what they mean and provide a suggestion.
 6) You are stateless: do not assume the user identity. Only use user-specific tools if user_id is provided.
 7) When a tool returns an error or multiple matches, ask a short clarifying question.
+8) The default store is s001. Do not ask for a specific store, use the default.
 
 Style:
 - Be concise.
@@ -102,12 +103,6 @@ TOOLS_SPEC = [
     },
 ]
 
-def _user_text_with_lang_hint(user_text: str, lang: Optional[str]) -> str:
-    if lang == "he":
-        return f"(ענה בעברית) {user_text}"
-    if lang == "en":
-        return f"(Answer in English) {user_text}"
-    return user_text
 
 async def run_agent_stream(payload: Dict[str, Any]) -> AsyncGenerator[Dict[str, Any], None]:
     user_text = (payload.get("text") or "").strip()
@@ -117,24 +112,24 @@ async def run_agent_stream(payload: Dict[str, Any]) -> AsyncGenerator[Dict[str, 
         yield {"type": "error", "message": "Empty message."}
         return
 
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     input_list: List[Dict[str, Any]] = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": _user_text_with_lang_hint(user_text, lang)},
+        {"role": "developer", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": user_text},
     ]
-
+    
     while True:
         # 1) streamed call
         streamed_text = ""
         function_calls = []
 
-        with client.responses.stream(
+        async with client.responses.stream(
             model="gpt-5",
             input=input_list,
             tools=TOOLS_SPEC,
         ) as stream:
-            for event in stream:
+            async for event in stream:
                 if event.type == "response.output_text.delta":
                     delta = event.delta or ""
                     if delta:
@@ -142,7 +137,7 @@ async def run_agent_stream(payload: Dict[str, Any]) -> AsyncGenerator[Dict[str, 
                         yield {"type": "token", "text": delta}
 
             # IMPORTANT: get the final response object from the SAME stream
-            response = stream.get_final_response()
+            response = await stream.get_final_response()
 
         # 2) parse tool calls from response.output (SAME response!)
         for item in response.output:
@@ -173,13 +168,6 @@ async def run_agent_stream(payload: Dict[str, Any]) -> AsyncGenerator[Dict[str, 
                 }
             })
 
-        # Append the assistant message to the history
-        input_list.append({
-            "role": "assistant",
-            "content": streamed_text or "", # Content can be null if only calling tools
-            "tool_calls": api_tool_calls
-        })
-
         # 4) execute tools and append function_call_output using those call_ids
         for call in function_calls:
             name = call["name"]
@@ -205,6 +193,12 @@ async def run_agent_stream(payload: Dict[str, Any]) -> AsyncGenerator[Dict[str, 
 
             yield {"type": "tool_result", "name": name, "result": result}
 
+            input_list.append({
+                "type": "function_call",
+                "call_id": call_id,
+                "name": name,
+                "arguments": args_str,
+            })
             input_list.append({
                 "type": "function_call_output",
                 "call_id": call_id,
