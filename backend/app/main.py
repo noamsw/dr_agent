@@ -1,4 +1,5 @@
 from fastapi import FastAPI, WebSocket
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.agent import run_agent_stream
 from starlette.websockets import WebSocketDisconnect
@@ -19,6 +20,11 @@ app.add_middleware(
 @app.get("/health")
 def health():
     return {"ok": True}
+
+@app.get("/")
+async def get_ui():
+    with open("index.html", "r", encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
 
 @app.websocket("/ws")
 async def ws_chat(ws: WebSocket):
