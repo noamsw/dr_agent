@@ -8,8 +8,12 @@ from app.tools import (
     get_medication_by_name,
     check_inventory,
     check_prescription_requirement,
-    check_allergy_concerns_and_ingredients,
-    submit_customer_feedback,
+    reserve_medication,
+    cancel_reservation_by_medication_id,
+    cancel_reservation_by_reservation_id,
+    find_active_prescriptions_for_user,
+    find_reservations_for_user,
+    get_medication_by_id
 )
 
 SYSTEM_PROMPT = """You are an AI pharmacist assistant for a retail pharmacy chain. You help customers in Hebrew or English.
@@ -17,13 +21,14 @@ SYSTEM_PROMPT = """You are an AI pharmacist assistant for a retail pharmacy chai
 Hard rules:
 1) Provide factual information only. Never diagnose. Never recommend what to take. Never encourage purchases.
 2) If the user asks for advice (e.g., “what should I take”, “is this safe for me”, “can I combine”, pregnancy, symptoms), refuse medical advice and redirect to a licensed pharmacist/doctor or emergency services if severe.
-3) You may explain label-style dosage/usage instructions and active ingredients as written in medication records.
-4) Use tools to answer questions about medications, inventory, prescription requirements, ingredients, allergies and feedback.
-5) Do not invent medication data or stock. If missing/ambiguous, ask a clarifying question or use the tool to search.
-6) If a user mistypes a common medication name, ask them what they mean and provide a suggestion.
-6) You are stateless: do not assume the user identity. Only use user-specific tools if user_id is provided.
-7) When a tool returns an error or multiple matches, ask a short clarifying question.
-8) The default store is s001. Do not ask for a specific store, use the default.
+3) You have no capability to schedule appointments, book consultations, or transfer users to human staff. If a user requests to speak with a professional, strictly advise them to call or visit their local pharmacy or doctor directly.
+4) You may explain label-style dosage/usage instructions and active ingredients as written in medication records.
+5) Use tools to answer questions about medications, inventory, prescription requirements, active ingredients.
+6) Do not invent medication data or stock. If missing/ambiguous, ask a clarifying question or use the tool to search.
+7) If a user mistypes a common medication name, ask them what they mean and provide a suggestion.
+8) Do not assume the user identity. Only use user-specific tools if the user provides phone last-4 (4 digits).
+9) When a tool returns an error or multiple matches, ask a short clarifying question.
+10) Default store is s001 unless the user specifies a different
 
 Style:
 - Be concise.
@@ -34,8 +39,12 @@ TOOL_FUNCS = {
     "get_medication_by_name": get_medication_by_name,
     "check_inventory": check_inventory,
     "check_prescription_requirement": check_prescription_requirement,
-    "check_allergy_concerns_and_ingredients": check_allergy_concerns_and_ingredients,
-    "submit_customer_feedback": submit_customer_feedback,
+    "reserve_medication": reserve_medication,
+    "cancel_reservation_by_medication_id": cancel_reservation_by_medication_id,
+    "cancel_reservation_by_reservation_id": cancel_reservation_by_reservation_id,
+    "find_active_prescriptions_for_user": find_active_prescriptions_for_user,
+    "find_reservations_for_user": find_reservations_for_user,
+    "get_medication_by_id": get_medication_by_id
 }
 
 TOOLS_SPEC = [
@@ -76,31 +85,150 @@ TOOLS_SPEC = [
     },
     {
         "type": "function",
-        "name": "check_allergy_concerns_and_ingredients",
-        "description": "List active ingredients and optionally flag allergy matches for a given user_id.",
+        "name": "reserve_medication",
+        "description": (
+            "Reserve (hold) a medication at a specific store for a user. "
+            "Validates stock, user identity (phone last-4), duplicate active reservations, "
+            "and prescription requirement if applicable. Returns a reservation receipt."
+        ),
         "parameters": {
             "type": "object",
             "properties": {
-                "medication_id": {"type": "string"},
-                "user_id": {"type": "string"},
+                "medication_id": {
+                    "type": "string",
+                    "description": "Medication ID (e.g., 'm001')."
+                },
+                "requested_quantity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "How many units to reserve (must be >= 1)."
+                },
+                "users_phone_last4": {
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$",
+                    "description": "User's phone number last 4 digits as a 4-digit string (e.g., '0427')."
+                },
+                "store_id": {
+                    "type": "string",
+                    "default": "s001",
+                    "description": "Store ID to reserve from (e.g., 's001'). Defaults to 's001'."
+                }
             },
-            "required": ["medication_id"],
-        },
+            "required": ["medication_id", "requested_quantity", "users_phone_last4"],
+            "additionalProperties": False
+        }
     },
     {
         "type": "function",
-        "name": "submit_customer_feedback",
-        "description": "Record customer feedback.",
+        "name": "cancel_reservation_by_reservation_id",
+        "description": (
+            "Cancel (release) a reservation using its reservation_id. "
+            "Removes the reservation from the user's reservations list and releases the reserved quantity "
+            "back to store inventory."
+        ),
         "parameters": {
             "type": "object",
             "properties": {
-                "user_id": {"type": "string"},
-                "rating": {"type": "integer", "minimum": 1, "maximum": 5},
-                "message": {"type": "string"},
+                "reservation_id": {
+                    "type": "string",
+                    "description": "Reservation ID to cancel (e.g., 'r_a1b2c3d4e5')."
+                },
+                "users_phone_last4": {
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$",
+                    "description": "User phone last 4 digits as a 4-digit string (e.g., '0427')."
+                }
             },
-            "required": ["rating", "message"],
-        },
+            "required": ["reservation_id", "users_phone_last4"],
+            "additionalProperties": False
+        }
     },
+    {
+        "type": "function",
+        "name": "cancel_reservation_by_medication_id",
+        "description": (
+            "Cancel (release) a user's reservation for a medication at a store. "
+            "Removes the reservation from the user's reservations list and releases the reserved quantity "
+            "back to store inventory."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "medication_id": {
+                    "type": "string",
+                    "description": "Medication ID to cancel (e.g., 'm001')."
+                },
+                "users_phone_last4": {
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$",
+                    "description": "User phone last 4 digits as a 4-digit string (e.g., '0427')."
+                },
+                "store_id": {
+                    "type": "string",
+                    "default": "s001",
+                    "description": "Store ID where the reservation was made (e.g., 's001'). Defaults to 's001'."
+                }
+            },
+            "required": ["medication_id", "users_phone_last4"],
+            "additionalProperties": False
+        }
+    },
+    {
+        "type": "function",
+        "name": "find_active_prescriptions_for_user",
+        "description": (
+            "Retrieve all active prescriptions for a user. "
+            "Returns a list of active prescriptions enriched with medication details."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "users_phone_last4": {
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$",
+                    "description": "User phone number last 4 digits as a 4-digit string (e.g., '0427')."
+                }
+            },
+            "required": ["users_phone_last4"],
+            "additionalProperties": False
+        }
+    },
+    {
+        "type": "function",
+        "name": "find_reservations_for_user",
+        "description": (
+            "Retrieve all current reservations for a user (reservations are considered active if present). "
+            "Returns a list of reservations enriched with medication details."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "users_phone_last4": {
+                    "type": "string",
+                    "pattern": "^[0-9]{4}$",
+                    "description": "User phone last 4 digits as a 4-digit string (e.g., '0427')."
+                }
+            },
+            "required": ["users_phone_last4"],
+            "additionalProperties": False
+        }
+    },
+    {
+        "type": "function",
+        "name": "get_medication_by_id",
+        "description": "Retrieve a medication by its medication_id.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "medication_id": {
+                    "type": "string",
+                    "description": "Medication ID (e.g., 'm001')."
+                }
+            },
+            "required": ["medication_id"],
+            "additionalProperties": False
+        }
+    }
 ]
 
 
