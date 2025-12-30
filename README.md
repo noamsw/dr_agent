@@ -25,5 +25,17 @@ docker build -t wonderful-backend .
 $env:OPENAI_API_KEY="sk-..."
 docker run --rm -p 8000:8000 -e OPENAI_API_KEY=$env:OPENAI_API_KEY wonderful-backend
 ```
+## To run the eval tests run:
+```
+$env:OPENAI_API_KEY="Openai-api-key"
+$env:PYTHONPATH="backend"
+python backend/eval/run_eval.py
+```
+## To run the tool tests run:
+```
+pytest -q 
+```
+from the backend folder.
 Have fun.
+
 
