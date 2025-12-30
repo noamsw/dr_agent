@@ -6,17 +6,6 @@ This agent can be used to query information about:
 - Availability of the medication at the store.
 - Reservation of medication, and cancellation of reservations.
 - User prescriptions and reservations.
-  
-## The project includes the following files:
-- main.py
-- agent.py
-- tools.py
-- inventory.json
-- medications.json
-- users.json 
-## Tools
-This agent has access to the following tools:
-- 
 
 ## Using the agent:
 Its quite simple - download the repo, add your api key to a .env file and then run docker. 
@@ -37,5 +26,6 @@ pytest -q
 ```
 from the backend folder.
 Have fun.
+
 
 
