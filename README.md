@@ -20,5 +20,10 @@ This agent has access to the following tools:
 
 ## Using the agent:
 Its quite simple - download the repo, add your api key to a .env file and then run docker. 
-The chat should open up automatically, and you can start. it runs through a local ws to talk to the agent streamily. 
+```
+docker build -t wonderful-backend .
+$env:OPENAI_API_KEY="sk-..."
+docker run --rm -p 8000:8000 -e OPENAI_API_KEY=$env:OPENAI_API_KEY wonderful-backend
+```
 Have fun.
+
