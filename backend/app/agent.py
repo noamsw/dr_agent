@@ -29,6 +29,7 @@ Hard rules:
 8) Do not assume the user identity. Only use user-specific tools if the user provides phone last-4 (4 digits).
 9) When a tool returns an error or multiple matches, ask a short clarifying question.
 10) Default store is s001 unless the user specifies a different
+11) Prescription Verification: Before reserving any medication, check its prescription requirements. If a prescription is required, you must verify that the user has an active prescription on file (using their phone number) before proceeding. If no active prescription is found, refuse the reservation and explain why.
 
 Style:
 - Be concise.
@@ -58,6 +59,7 @@ TOOLS_SPEC = [
                 "name": {"type": "string", "description": "Brand or generic name, e.g. 'Advil' or 'Ibuprofen'."}
             },
             "required": ["name"],
+            "additionalProperties": False
         },
     },
     {
@@ -71,6 +73,7 @@ TOOLS_SPEC = [
                 "store_id": {"type": "string", "description": "Store id. Default: s001"},
             },
             "required": ["medication_id"],
+            "additionalProperties": False
         },
     },
     {
@@ -81,6 +84,7 @@ TOOLS_SPEC = [
             "type": "object",
             "properties": {"medication_id": {"type": "string"}},
             "required": ["medication_id"],
+            "additionalProperties": False
         },
     },
     {
@@ -232,7 +236,7 @@ TOOLS_SPEC = [
 ]
 
 
-async def run_agent_stream(payload: Dict[str, Any], history: List[Dict[str, Any]]) -> AsyncGenerator[Dict[str, Any], None]:
+async def run_agent_stream(payload: Dict[str, Any], history: List[Dict[str, Any]] = []) -> AsyncGenerator[Dict[str, Any], None]:
     user_text = (payload.get("text") or "").strip()
 
     if not user_text:
@@ -282,18 +286,6 @@ async def run_agent_stream(payload: Dict[str, Any], history: List[Dict[str, Any]
         
         # We must record that the Assistant made these tool calls.
         # Construct the 'tool_calls' list in the format expected by the API.
-        
-        api_tool_calls = []
-        for call in function_calls:
-            api_tool_calls.append({
-                "id": call["call_id"],
-                "type": "function",
-                "function": {
-                    "name": call["name"],
-                    "arguments": call["arguments"]
-                }
-            })
-
         # 4) execute tools and append function_call_output using those call_ids
         for call in function_calls:
             name = call["name"]

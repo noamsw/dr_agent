@@ -4,9 +4,16 @@ from app.db import load_json, save_json
 import uuid
 
 def _now_iso() -> str:
+    """
+    Return the current UTC time as an ISO-8601 string (seconds precision).
+    """
     return  datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 def get_medication_by_name(name: str) -> Dict[str, Any]:
+    """
+    Look up a medication by brand or generic name.
+    Returns exact match if found, plus partial matches.
+    """
     meds = load_json("medications.json")
     q = name.strip().lower()
     exact = None
@@ -27,6 +34,9 @@ def get_medication_by_name(name: str) -> Dict[str, Any]:
     return {"found": False, "medication": None, "matches": matches}
 
 def get_medication_by_id(medication_id: str) -> Dict[str, Any]:
+    """
+    Retrieve basic medication details by medication_id.
+    """
     meds = load_json("medications.json")
     q = medication_id.strip().lower()
 
@@ -48,6 +58,9 @@ def get_medication_by_id(medication_id: str) -> Dict[str, Any]:
     }
 
 def check_inventory(medication_id: str, store_id: str = "s001") -> Dict[str, Any]:
+    """
+    Check inventory availability for a medication at a given store.
+    """
     inv = load_json("inventory.json")
     rec = next((x for x in inv if x["store_id"] == store_id and x["medication_id"] == medication_id), None)
     if not rec:
@@ -64,6 +77,9 @@ def check_inventory(medication_id: str, store_id: str = "s001") -> Dict[str, Any
     }
 
 def has_active_prescription(user_rec: dict, medication_id: str) -> bool:
+    """
+    Return True if the user has an active prescription for the medication.
+    """
     for rx in user_rec.get("active_prescriptions", []):
         if (
             rx.get("medication_id") == medication_id
@@ -74,18 +90,17 @@ def has_active_prescription(user_rec: dict, medication_id: str) -> bool:
 
 def get_user_by_last4(
     users: List[Dict[str, Any]],
-    users_phone_last4: str,) -> Tuple[Optional[Dict[str,Any]], Optional[Dict[str,Any]]]:
+    users_phone_last4: str,) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
     """
-    Find user by phone last-4.
-    Returns: (index, user_rec, error)
-    Exactly one of (index, user_rec) or error will be non-None.
+    Find a user by the last 4 digits of their phone number.
+    Returns (user_record, error) where exactly one is non-None.
     """
     idx = next(
         (i for i, u in enumerate(users) if u.get("phone_last4") == users_phone_last4),
         None
     )
     if idx is None:
-        return None, None, {
+        return None, {
             "error_code": "NOT_FOUND",
             "message": "No recorded user with that number."
         }
@@ -96,6 +111,10 @@ def reserve_medication(
     requested_quantity: int,
     users_phone_last4: str,
     store_id: str = "s001",) -> Dict[str, Any]:
+    """
+    Reserve a medication at a store for a user.
+    Validates stock, duplicate reservations, and prescription requirements.
+    """
     if requested_quantity <= 0:
         return {"error_code": "BAD_REQUEST", "message": "requested_quantity must be > 0."}
 
@@ -185,6 +204,11 @@ def cancel_reservation_by_medication_id(
     medication_id: str,
     users_phone_last4: str,
     store_id: str = "s001",) -> Dict[str, Any]:
+    """
+    Cancel a user's reservation for a medication at a specific store.
+    Restores reserved inventory back to available stock.
+    """
+
     users = load_json("users.json")
     inv = load_json("inventory.json")
 
@@ -256,6 +280,9 @@ def cancel_reservation_by_medication_id(
 def cancel_reservation_by_reservation_id(
     reservation_id: str,
     users_phone_last4: str,) -> Dict[str, Any]:
+    """
+    Cancel a reservation using its reservation_id.
+    """
     users = load_json("users.json")
     inv = load_json("inventory.json")
 
@@ -332,6 +359,9 @@ def cancel_reservation_by_reservation_id(
 def find_active_prescriptions_for_user(
     users_phone_last4: str,
 ) -> Dict[str, Any]:
+    """
+    List all active prescriptions for a user.
+    """
     users = load_json("users.json")
     meds = load_json("medications.json")
 
@@ -383,6 +413,9 @@ def find_active_prescriptions_for_user(
     }
 
 def find_reservations_for_user(users_phone_last4: str) -> Dict[str, Any]:
+    """
+    List all active reservations for a user.
+    """
     users = load_json("users.json")
     meds = load_json("medications.json")
 
@@ -419,6 +452,9 @@ def find_reservations_for_user(users_phone_last4: str) -> Dict[str, Any]:
     }
         
 def check_prescription_requirement(medication_id: str) -> Dict[str, Any]:
+    """
+    Check whether a medication requires a prescription.
+    """
     meds = load_json("medications.json")
     m = next((x for x in meds if x["medication_id"] == medication_id), None)
     if not m:

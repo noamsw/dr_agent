@@ -193,7 +193,7 @@
 
     <footer>
       <div class="controls">
-        <textarea id="input" placeholder="Type a message… (Enter to send, Shift+Enter for new line)"></textarea>
+        <textarea id="input" dir="auto" placeholder="Type a message… (Enter to send, Shift+Enter for new line)"></textarea>
         <button id="sendBtn">Send</button>
       </div>
 
@@ -246,6 +246,7 @@
 
     const bubble = document.createElement("div");
     bubble.className = "bubble " + role;
+    bubble.dir="auto";
     bubble.textContent = text;
 
     row.appendChild(bubble);
@@ -265,7 +266,7 @@
     const bubble = document.createElement("div");
     bubble.className = "bubble assistant";
     bubble.textContent = "";
-
+    bubble.dir = "auto";
     const tools = document.createElement("details");
     tools.className = "tools";
     tools.open = false;

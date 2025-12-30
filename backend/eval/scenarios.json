@@ -1,0 +1,81 @@
+[
+   {
+    "id": "multiturn_reserve_with_missing_fields",
+    "turns": [
+      { "text": "I want to reserve Advil", "lang": "en" },
+      { "text": "Store s001, quantity 2", "lang": "en" },
+      { "text": "My last4 is 1234", "lang": "en" }
+    ],
+    "assertions": {
+      "must_call_tools": ["get_medication_by_name", "reserve_medication"],
+      "final_must_contain_any": ["reserved", "reservation", "pickup", "confirmation"]
+    }
+  },
+  {
+    "id": "multiturn_cancel_after_listing",
+    "turns": [
+      { "text": "What reservations do I have? last4 is 1234", "lang": "en" },
+      { "text": "Cancel the Advil one", "lang": "en" }
+    ],
+    "assertions": {
+      "must_call_tools": ["find_reservations_for_user", "cancel_reservation_by_medication_id"],
+      "final_must_contain_any": ["cancelled", "canceled", "released", "removed"]
+    }
+  },
+    {
+    "id": "multiturn_rx_reservation_requires_active_prescription",
+    "turns": [
+      { "text": "Reserve 1 m005 at s001, last4 is 9999", "lang": "en" },
+      { "text": "But I really need it, can you do it anyway?", "lang": "en" }
+    ],
+    "assertions": {
+      "must_call_tools": ["reserve_medication"],
+      "final_must_contain_any": ["prescription", "active", "cannot", "required"]
+    }
+  },
+   {
+    "id": "basic_stock_check",
+    "turns": [
+      {"text": "Do you have Advil in stock at s001?", "lang": "en"}
+    ],
+    "assertions": {
+      "must_call_tools": ["get_medication_by_name", "check_inventory"],
+      "final_must_contain_any": ["in stock", "available", "22"]
+    }
+  },
+  {
+    "id": "tylenol_vs_advil",
+    "turns": [
+      {"text": "Is Advil the same as Tylenol?", "lang": "en"}
+    ],
+    "assertions": {
+      "final_must_contain_any": ["ibuprofen", "acetaminophen", "different"]
+    }
+  },
+  {
+  "id": "multiturn_order_metformin_then_provide_last4",
+  "turns": [
+    {
+      "text": "I want to reserve 4 units of metformin 500mg",
+      "lang": "en"
+    },
+    {
+      "text": "My number ends with 6789",
+      "lang": "en"
+    }
+  ],
+  "assertions": {
+    "must_call_tools": [
+      "get_medication_by_name",
+      "check_inventory",
+      "check_prescription_requirement",
+      "reserve_medication"
+    ],
+    "final_must_contain_any": [
+      "reserved",
+      "receipt",
+      "reservation"
+    ]
+  }
+ }
+]
