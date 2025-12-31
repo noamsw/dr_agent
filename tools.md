@@ -23,7 +23,8 @@ This document describes all backend tools exposed to the pharmacy assistant agen
 ## Medication Lookup
 
 ### `get_medication_by_name`
-**Purpose** Look up a medication using a brand or generic name. Returns the full medication record when found, as well as partial matches.
+**Purpose** 
+Look up a medication using a brand or generic name. Returns the full medication record when found, as well as partial matches.
 
 **Inputs**
 | Name | Type | Required | Description |
@@ -57,9 +58,10 @@ Agent may ask the user to clarify between multiple matches.
 
 ### `get_medication_by_id`
 
-***Purpose*** Retrieve basic medication details using a unique medication ID.
+**Purpose** 
+Retrieve basic medication details using a unique medication ID.
 
-***Inputs*** 
+**Inputs** 
 | Name | Type | Required |
 | :--- | :--- | :--- | 
 | medication_id | string | Yes |
