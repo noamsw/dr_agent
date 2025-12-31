@@ -97,7 +97,8 @@ Output Schema
 
 {
   "medication_id": "m001",
-  "requires_prescription": false
+  "requires_prescription": false,
+   "note": "Prescription-only|OTC"
 }
 ```
 Error Handling 
