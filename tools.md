@@ -160,8 +160,7 @@ Output Schema
     "medication_id": "m001",
     "store_id": "s001",
     "quantity": 2,
-    "created_at_iso": "2025-12-30T12:00:00Z",
-    "expires_at_iso": "2025-12-31T12:00:00Z"
+    "created_at_iso": "2025-12-30T12:00:00Z"
   }
 }
 ```
@@ -189,7 +188,13 @@ Output Schema
 ```JSON
 {
   "success": true,
-  "message": "Reservation cancelled."
+  "message": "Reservation cancelled.",
+  "cancelled": {
+            "medication_id": medication_id,
+            "store_id": store_id,
+            "quantity_released": qty,
+            "users_phone_last4": users_phone_last4,
+   }
 }
 ```
 Error Handling 
@@ -197,6 +202,7 @@ Error Handling
 | :--- | :--- | 
 | NO_RESERVATION | No reservation exists for this criteria | 
 | NOT_FOUND | User not found |
+| BAD_RESERVATION | Reservation exists, but is corrupted |
 
 
 ### `cancel_reservation_by_reservation_id`
