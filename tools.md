@@ -85,9 +85,9 @@ Error Handling
 
 ### `check_prescription_requirement`
 
-***Purpose*** Check whether a medication requires a prescription.
+**Purpose** Check whether a medication requires a prescription.
 
-***Inputs***
+**Inputs**
 | Name | Type | Required | 
 | :--- | :--- | :--- | 
 | medication_id | string | Yes |
@@ -109,9 +109,9 @@ Error Handling
 ## Inventory & Reservations
 ### `check_inventory`
 
-***Purpose*** Check inventory availability for a medication at a specific store.
+**Purpose** Check inventory availability for a medication at a specific store.
 
-***Inputs***
+**Inputs**
 | Name | Type | Required | Default | 
 | :--- | :--- | :--- | :--- |
 | medication_id | string | Yes | — |
@@ -139,9 +139,9 @@ Fallback Behavior - Defaults to store s001 if none provided.
 
 ### `reserve_medication`
 
-***Purpose*** Reserve medication inventory for a user at a specific store. Validates stock availability, duplicate reservations, and prescription requirements.
+**Purpose** Reserve medication inventory for a user at a specific store. Validates stock availability, duplicate reservations, and prescription requirements.
 
-***Inputs*** 
+**Inputs** 
 | Name | Type | Required | Description |
 | :--- | :--- | :--- | :--- | 
 | medication_id | string | Yes | Medication ID to reserve |
@@ -175,9 +175,9 @@ Error Handling
 
 ### `cancel_reservation_by_medication_id`
 
-***Purpose*** Cancel a reservation using medication ID and store ID. Releases reserved inventory back into availability.
+**Purpose** Cancel a reservation using medication ID and store ID. Releases reserved inventory back into availability.
 
-***Inputs*** 
+**Inputs** 
 | Name | Type | Required |
 | :--- | :--- | :--- |
 | medication_id | string | Yes |
@@ -200,9 +200,9 @@ Error Handling
 
 ### `cancel_reservation_by_reservation_id`
 
-***Purpose*** Cancel a reservation using its unique reservation ID.
+**Purpose** Cancel a reservation using its unique reservation ID.
 
-***Inputs*** 
+**Inputs** 
 | Name | Type | Required | 
 | :--- | :--- | :--- | 
 | reservation_id | string | Yes | 
@@ -218,9 +218,9 @@ Output Schema
 
 ### `find_reservations_for_user`
 
-***Purpose*** List all active reservations for a specific user.
+**Purpose** List all active reservations for a specific user.
 
-***Inputs*** 
+**Inputs** 
 | Name | Type | Required | 
 | :--- | :--- | :--- | 
 | users_phone_last4 | string | Yes |
@@ -249,9 +249,9 @@ Output Schema
 ## Prescriptions
 ### `find_active_prescriptions_for_user`
 
-***Purpose*** List all active prescriptions associated with a user's phone number.
+**Purpose** List all active prescriptions associated with a user's phone number.
 
-***Inputs*** 
+**Inputs** 
 | Name | Type | Required | 
 | :--- | :--- | :--- | 
 | users_phone_last4 | string | Yes |
