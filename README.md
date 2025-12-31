@@ -7,8 +7,12 @@ This agent can be used to query information about:
 - Reservation of medication, and cancellation of reservations.
 - User prescriptions and reservations.
 
+## Agent Flow:
+User -> Agent -> Tools -> Agent -> Response
+With perhaps multiple calls to tools.
+
 ## Using the agent:
-Its quite simple - download the repo, add your api key to a .env file and then run docker. 
+Its quite simple - download the repo, and then run docker:
 ```
 docker build -t wonderful-backend .
 $env:OPENAI_API_KEY="sk-..."
@@ -27,6 +31,7 @@ from the backend folder:
 pytest -q 
 ```
 Have fun.
+
 
 
 
