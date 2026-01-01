@@ -8,7 +8,7 @@ This agent can be used to query information about:
 - User prescriptions and reservations.
 
 ## Agent Flow:
-User -> Agent -> Tools -> Agent -> Response
+User -> Agent -> Tools -> Agent -> Response  
 With perhaps multiple calls to tools.
 
 ## Using the agent:
@@ -19,7 +19,7 @@ $env:OPENAI_API_KEY="sk-..."
 docker run --rm -p 8000:8000 -e OPENAI_API_KEY=$env:OPENAI_API_KEY wonderful-backend
 ```
 You can use the index.html file in the frontend for a nicer experience.
-## To run the eval tests run:
+## To run the eval tests from the root run:
 ```
 $env:OPENAI_API_KEY="Openai-api-key"
 $env:PYTHONPATH="backend"
@@ -31,6 +31,7 @@ from the backend folder:
 pytest -q 
 ```
 Have fun.
+
 
 
 
