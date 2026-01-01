@@ -11,7 +11,11 @@ WS_URL = "ws://127.0.0.1:8000/ws"
 async def chat():
     print("Console WS chat connected to:", WS_URL)
     print("-" * 60)
-    async with websockets.connect(WS_URL, ping_interval=None) as ws:
+    async with websockets.connect(
+        WS_URL, 
+        ping_interval=None, 
+        ping_timeout=None
+    ) as ws:
         while True:
             try:
                 user_text = input("\nYou> ").strip()

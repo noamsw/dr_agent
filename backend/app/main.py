@@ -29,18 +29,11 @@ async def get_ui():
 @app.websocket("/ws")
 async def ws_chat(ws: WebSocket):
     await ws.accept()
-    history: List[Dict[str, Any]] = []
     try:
         while True:
             msg = await ws.receive_json()
-            user_text = msg.get("text", "")
-            async for event in run_agent_stream(msg, history):
+            async for event in run_agent_stream(msg):
                 await ws.send_json(event)
-                if event["type"] == "final":
-                    # persist conversation turn
-                    history.append({"role": "user", "content": user_text})
-                    history.append({"role": "assistant", "content": event["text"]})
-                    history[:] = history[-20:]
     except WebSocketDisconnect:
         # client closed the connection
         return

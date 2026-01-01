@@ -3,8 +3,8 @@
     "store_id": "s001",
     "medication_id": "m001",
     "quantity_on_hand": 1000,
-    "reserved": 42,
-    "last_updated_iso": "2025-12-30T22:04:12+00:00"
+    "reserved": 20,
+    "last_updated_iso": "2026-01-01T10:03:00+00:00"
   },
   {
     "store_id": "s001",
@@ -31,7 +31,7 @@
     "store_id": "s001",
     "medication_id": "m005",
     "quantity_on_hand": 800,
-    "reserved": 12,
-    "last_updated_iso": "2025-12-30T21:38:11+00:00"
+    "reserved": 16,
+    "last_updated_iso": "2026-01-01T08:53:11+00:00"
   }
 ]

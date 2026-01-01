@@ -55,15 +55,7 @@
         "status": "active"
       }
     ],
-    "reservations": [
-      {
-        "reservation_id": "r_2bad3cbaa4",
-        "medication_id": "m005",
-        "store_id": "s001",
-        "quantity": 4,
-        "created_at_iso": "2025-12-30T21:38:11+00:00"
-      }
-    ]
+    "reservations": []
   },
   {
     "user_id": "u005",
@@ -122,11 +114,11 @@
     "active_prescriptions": [],
     "reservations": [
       {
-        "reservation_id": "r_e4c92da80c",
+        "reservation_id": "r_d425f2aa86",
         "medication_id": "m001",
         "store_id": "s001",
         "quantity": 20,
-        "created_at_iso": "2025-12-30T22:04:12+00:00"
+        "created_at_iso": "2026-01-01T10:03:00+00:00"
       }
     ]
   },
