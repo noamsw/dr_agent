@@ -18,7 +18,7 @@ The project has two main folders
   - Data : a small artificial database of users, medications and inventory.
   - Eval : golden evalutaion test scenarios.
   - Tests : unit tests for the tools
-- Frontend : this contains to options to interact with the agent. WS CLI or a small WEB UI.
+- Frontend : this contains to options to interact with the agent. WS CLI or a small WEB UI.  
 In addition:
 - Images : snapshots of chats.
 - The Project contains tool documentation under tools.md and an evaluation report under multi_flow_evaluations.md.
@@ -67,6 +67,7 @@ pytest -q
 ```
 
 Have fun.
+
 
 
 
