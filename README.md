@@ -52,7 +52,11 @@ from the backend folder:
 ```
 pytest -q 
 ```
+
+### Evaluation
+An evaluation document is under multi_flow_evaluations.md, along with a tool spec at tools.md.
 Have fun.
+
 
 
 
