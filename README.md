@@ -17,7 +17,7 @@ Its quite simple - download the repo, and then run docker:
 # Build the Docker image
 docker build -t wonderful-backend .
 
-# Set your API Key (PowerShell)
+# Set your API Key (Windows PowerShell)
 $env:OPENAI_API_KEY="sk-..."
 
 # Run the container
@@ -38,8 +38,13 @@ python frontend/ws.py
 ``` 
 ## To run the eval tests from the root run:
 ```
+# Set your openai API key
 $env:OPENAI_API_KEY="Openai-api-key"
+
+# Map the background directory to your python path, so it can import app, etc.
 $env:PYTHONPATH="backend"
+
+# Run the tests
 python backend/eval/run_eval.py
 ```
 ## To run the tool tests run:
@@ -48,6 +53,7 @@ from the backend folder:
 pytest -q 
 ```
 Have fun.
+
 
 
 
