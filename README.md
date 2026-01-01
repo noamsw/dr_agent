@@ -11,6 +11,19 @@ This agent can be used to query information about:
 User -> Agent -> Tools -> Agent -> Response  
 With perhaps multiple calls to tools.
 
+## Architechture
+The project has two main folders
+- Backend : 
+  - App :all the relevant files for the agent. tools.py, db.py, main.py, agent.py.
+  - Data : a small artificial database of users, medications and inventory.
+  - Eval : golden evalutaion test scenarios.
+  - Tests : unit tests for the tools
+- Frontend : this contains to options to interact with the agent. WS CLI or a small WEB UI.
+In addition:
+- Images : snapshots of chats.
+- The Project contains tool documentation under tools.md and an evaluation report under multi_flow_evaluations.md.
+
+
 ## Running the agent:
 Its quite simple - download the repo, and then run docker:
 ```
@@ -24,7 +37,7 @@ $env:OPENAI_API_KEY="sk-..."
 docker run --rm -p 8000:8000 -e OPENAI_API_KEY=$env:OPENAI_API_KEY wonderful-backend
 ```
 
-### Running the client:
+## Running the client:
 You have two options.  
   Either a browser based chat style UI.
   To Run:
@@ -53,9 +66,8 @@ from the backend folder:
 pytest -q 
 ```
 
-### Evaluation
-An evaluation document is under multi_flow_evaluations.md, along with a tool spec at tools.md.
 Have fun.
+
 
 
 
