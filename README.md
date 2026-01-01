@@ -11,14 +11,31 @@ This agent can be used to query information about:
 User -> Agent -> Tools -> Agent -> Response  
 With perhaps multiple calls to tools.
 
-## Using the agent:
+## Running the agent:
 Its quite simple - download the repo, and then run docker:
 ```
+# Build the Docker image
 docker build -t wonderful-backend .
+
+# Set your API Key (PowerShell)
 $env:OPENAI_API_KEY="sk-..."
+
+# Run the container
 docker run --rm -p 8000:8000 -e OPENAI_API_KEY=$env:OPENAI_API_KEY wonderful-backend
 ```
-You can use the index.html file in the frontend for a nicer experience.
+
+### Running the client:
+You have two options.  
+  Either a browser based chat style UI.
+  To Run:
+  - Open the frontend/index.html file with Live Server, or use any simple static server.
+  - Ensure the connection URL in the UI is set to ws://localhost:8000/ws.
+    
+  Or, Console interface.
+  From the project root run:
+```
+python frontend/ws.py
+``` 
 ## To run the eval tests from the root run:
 ```
 $env:OPENAI_API_KEY="Openai-api-key"
@@ -31,6 +48,7 @@ from the backend folder:
 pytest -q 
 ```
 Have fun.
+
 
 
 
